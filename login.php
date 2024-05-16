@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
     <style>
+        /* Resetting default margin and padding */
         * {
             margin: 0;
             padding: 0;
@@ -73,8 +74,8 @@
         <h2>Login</h2>
         <form action="login_process.php" method="post">
             <div class="input-field">
-                <label for="username">Username:</label>
-                <input type="text" id="username" name="username" required>
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required>
             </div>
             <div class="input-field">
                 <label for="password">Password:</label>

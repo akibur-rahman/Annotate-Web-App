@@ -52,7 +52,6 @@
             justify-content: center;
             align-items: center;
             height: calc(100vh - 100px);
-            /* Adjusting for header height */
         }
 
         .center-section {

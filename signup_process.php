@@ -40,7 +40,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Insert user into database
     $insert_user_query = "INSERT INTO users (first_name, last_name, email, password) VALUES ('$first_name', '$last_name', '$email', '$hashed_password')";
     if ($conn->query($insert_user_query) === TRUE) {
-        echo "Signup successful!";
+        header("Location: login.php");
     } else {
         echo "Error: " . $insert_user_query . "<br>" . $conn->error;
     }
