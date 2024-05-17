@@ -59,7 +59,6 @@ $conn->close();
     <title>App</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <style>
-        /* Resetting default margin and padding */
         * {
             margin: 0;
             padding: 0;
@@ -103,7 +102,6 @@ $conn->close();
             justify-content: center;
             align-items: center;
             height: calc(100vh - 140px);
-            /* Adjust based on header/footer height */
         }
 
         .annotation-app {
@@ -129,10 +127,9 @@ $conn->close();
             align-items: center;
         }
 
-        .annotation-controls select,
-        .annotation-controls button {
-            padding: 10px;
-            font-size: 16px;
+        .annotation-controls .mdl-button {
+            margin-right: 10px;
+            margin-left: 10px;
         }
 
         #canvas {
@@ -168,11 +165,19 @@ $conn->close();
             <div class="annotation-app">
                 <canvas id="canvas"></canvas>
                 <div class="annotation-controls">
-                    <select id="annotation-label">
-                        <option value="0">Label 0</option>
-                        <option value="1">Label 1</option>
-                    </select>
-                    <button id="next-button">Next</button>
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <select id="annotation-label" class="mdl-textfield__input">
+                            <option value="0">Label 0</option>
+                            <option value="1">Label 1</option>
+                        </select>
+                        <label class="mdl-textfield__label" for="annotation-label"></label>
+                    </div>
+                    <button id="done-button" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+                        Done
+                    </button>
+                    <button id="next-button" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--primary">
+                        Next
+                    </button>
                 </div>
             </div>
         </section>
@@ -181,18 +186,20 @@ $conn->close();
     <footer>
         © 2024 Your Company
     </footer>
+
     <script>
         document.addEventListener('DOMContentLoaded', (event) => {
             let currentIndex = 0; // Initialize index to track current image
             const images = <?php echo json_encode($images); ?>; // Array of image paths
+            let annotations = []; // Array to store annotations for the current image
+            let isDrawing = false;
+            let startX, startY, endX, endY;
 
             function loadImage(index) {
                 const img = new Image();
                 img.src = images[index];
                 const canvas = document.getElementById('canvas');
                 const ctx = canvas.getContext('2d');
-                let isDrawing = false;
-                let startX, startY, endX, endY;
 
                 img.onload = function() {
                     canvas.width = img.width; // Set canvas width to match image width
@@ -220,44 +227,58 @@ $conn->close();
 
                 canvas.addEventListener('mouseup', () => {
                     isDrawing = false;
-                    saveAnnotation(startX, startY, endX, endY);
                 });
+            }
 
-                function saveAnnotation(x1, y1, x2, y2) {
-                    const label = document.getElementById('annotation-label').value;
-                    const width = canvas.width;
-                    const height = canvas.height;
+            function saveAnnotation(x1, y1, x2, y2) {
+                const label = document.getElementById('annotation-label').value;
+                const canvas = document.getElementById('canvas');
+                const width = canvas.width;
+                const height = canvas.height;
 
-                    const normX = (x1 + x2) / 2 / width;
-                    const normY = (y1 + y2) / 2 / height;
-                    const normWidth = Math.abs(x2 - x1) / width;
-                    const normHeight = Math.abs(y2 - y1) / height;
+                const normX = (x1 + x2) / 2 / width;
+                const normY = (y1 + y2) / 2 / height;
+                const normWidth = Math.abs(x2 - x1) / width;
+                const normHeight = Math.abs(y2 - y1) / height;
 
-                    const annotationData = `${label} ${normX} ${normY} ${normWidth} ${normHeight}\n`;
+                const annotationData = `${label} ${normX} ${normY} ${normWidth} ${normHeight}`;
+                annotations.push(annotationData); // Store annotation in the array
 
-                    // Send the annotation data to the server to save it
+                console.log(`Annotation saved: ${annotationData}`);
+            }
+
+            document.getElementById('done-button').addEventListener('click', () => {
+                if (startX !== undefined && startY !== undefined && endX !== undefined && endY !== undefined) {
+                    saveAnnotation(startX, startY, endX, endY);
+                }
+            });
+
+            document.getElementById('next-button').addEventListener('click', function() {
+                if (annotations.length > 0) {
+                    const annotationString = annotations.join('\n');
+
+                    // Send all accumulated annotations to the server
                     fetch('save_annotation.php', {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/x-www-form-urlencoded'
                             },
-                            body: `image=<?php echo basename($imagePath); ?>&data=${annotationData}`
+                            body: `image=${encodeURIComponent(images[currentIndex])}&data=${encodeURIComponent(annotationString)}`
                         }).then(response => response.text())
                         .then(data => console.log(data))
                         .catch(error => console.error('Error:', error));
+
+                    annotations = []; // Clear the annotations array for the next image
                 }
-            }
 
-            loadImage(currentIndex); // Load the first image initially
-
-            document.getElementById('next-button').addEventListener('click', function() {
                 // Increment index to load the next image
                 currentIndex = (currentIndex + 1) % images.length;
                 loadImage(currentIndex); // Load the next image
             });
+
+            loadImage(currentIndex); // Load the first image initially
         });
     </script>
-
 </body>
 
 </html>
