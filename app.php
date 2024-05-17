@@ -89,8 +89,8 @@ $conn->close();
         }
 
         footer {
-            background-color: #1976D2;
-            color: white;
+            background-color: whitesmoke;
+            color: black;
             text-align: center;
             padding: 10px 0;
             position: fixed;
