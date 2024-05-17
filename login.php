@@ -66,6 +66,20 @@
         .btn:hover {
             background-color: #1565C0;
         }
+
+        .sign-up {
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .sign-up a {
+            color: #1976D2;
+            text-decoration: none;
+        }
+
+        .sign-up a:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 
@@ -85,6 +99,9 @@
                 <button class="btn" type="submit">Login</button>
             </div>
         </form>
+        <div class="sign-up">
+            <p>Not Registared? <a href="signup.php">Sign Up</a></p>
+        </div>
     </div>
 </body>
 
