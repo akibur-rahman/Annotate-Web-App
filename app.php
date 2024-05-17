@@ -88,9 +88,44 @@ $conn->close();
             margin-right: 20px;
         }
 
+        .center-section {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: calc(100vh - 140px);
+            /* Adjust based on header/footer height */
+        }
+
+        .annotation-app {
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            width: 80%;
+            max-width: 800px;
+        }
+
+        .annotation-app img {
+            max-width: 100%;
+            border: 1px solid #ccc;
+        }
+
+        .annotation-controls {
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .annotation-controls select,
+        .annotation-controls button {
+            padding: 10px;
+            font-size: 16px;
+        }
+
         footer {
-            background-color: whitesmoke;
-            color: black;
+            background-color: #1976D2;
+            color: white;
             text-align: center;
             padding: 10px 0;
             position: fixed;
@@ -106,19 +141,35 @@ $conn->close();
             <img src="https://png.pngtree.com/png-clipart/20231019/original/pngtree-user-profile-avatar-png-image_13369988.png" alt="Profile Picture">
             <div class="username"><?php echo $first_name . " " . $last_name; ?></div>
         </div>
-        <div class="credit">Credit: <span id="credit">0</span></div>
+        <div class="score">Score: <span id="score">0</span></div>
     </header>
 
     <main>
-        <!-- Center section for annotation app -->
         <section class="center-section">
-            <!-- Your annotation app content will go here -->
+            <div class="annotation-app">
+                <img src="dataset/raw/sample.jpg" alt="Image to annotate" id="annotation-image">
+                <div class="annotation-controls">
+                    <select id="annotation-label">
+                        <option value="0">Label 0</option>
+                        <option value="1">Label 1</option>
+                    </select>
+                    <button id="next-button">Next</button>
+                </div>
+            </div>
         </section>
     </main>
 
     <footer>
-        © 2024 Annotate
+        © 2024 Your Company
     </footer>
 </body>
+
+<script>
+    // Placeholder JavaScript for button functionality
+    document.getElementById('next-button').addEventListener('click', function() {
+        // Logic to handle next image and annotation
+        alert('Next image!');
+    });
+</script>
 
 </html>
