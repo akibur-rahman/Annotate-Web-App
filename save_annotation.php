@@ -1,30 +1,19 @@
 <?php
-// Start session
-session_start();
-
-if (!isset($_SESSION['user_id'])) {
-    header("Location: login.php");
-    exit();
-}
-
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $imageName = $_POST['image_name'];
-    $annotations = $_POST['annotations']; // This should be a JSON string
+    $imageName = $_POST['image'];
+    $annotationData = $_POST['data'];
+    $rawDir = 'dataset/raw';
+    $annotatedDir = 'dataset/annotated/train/labels';
 
-    $annotationData = json_decode($annotations, true);
-    $labelFile = str_replace('.jpg', '.txt', $imageName);
-    $labelPath = "dataset/raw/$labelFile";
-
-    $file = fopen($labelPath, 'w');
-    foreach ($annotationData as $annotation) {
-        $label = $annotation['label'];
-        $x = $annotation['x'];
-        $y = $annotation['y'];
-        $width = $annotation['width'];
-        $height = $annotation['height'];
-        fwrite($file, "$label $x $y $width $height\n");
+    // Ensure the directories exist
+    if (!is_dir($annotatedDir)) {
+        mkdir($annotatedDir, 0777, true);
     }
-    fclose($file);
+
+    // Write annotation data to file
+    $baseName = pathinfo($imageName, PATHINFO_FILENAME);
+    $annotationFile = "$annotatedDir/$baseName.txt";
+    file_put_contents($annotationFile, $annotationData, FILE_APPEND);
 
     echo "Annotation saved.";
 } else {
