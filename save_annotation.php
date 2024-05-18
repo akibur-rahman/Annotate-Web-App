@@ -14,6 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $annotationData = $_POST['data'];
     $rawDir = 'dataset/raw';
     $annotatedDir = 'dataset/annotated/train/labels';
+    $annotatedImagesDir = 'dataset/annotated/train/images';
 
     // Ensure the directories exist
     if (!is_dir($annotatedDir)) {
@@ -22,11 +23,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
     }
 
+    if (!is_dir($annotatedImagesDir)) {
+        if (!mkdir($annotatedImagesDir, 0777, true)) {
+            die("Failed to create directory: $annotatedImagesDir");
+        }
+    }
+
     // Write annotation data to file
     $baseName = pathinfo($imageName, PATHINFO_FILENAME);
     $annotationFile = "$annotatedDir/$baseName.txt";
     if (file_put_contents($annotationFile, $annotationData, FILE_APPEND) === false) {
         die("Failed to write to file: $annotationFile");
+    }
+
+    // Move the image to the annotated images directory
+    $newImagePath = "$annotatedImagesDir/" . basename($imageName);
+    if (!rename($imageName, $newImagePath)) {
+        die("Failed to move image to annotated directory: $newImagePath");
     }
 
     // Database connection
@@ -46,6 +59,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $conn->begin_transaction();
 
     try {
+        // Record the annotation in the database
+        $insert_annotation_query = "INSERT INTO annotations (user_id, image_path) VALUES (?, ?)";
+        $stmt = $conn->prepare($insert_annotation_query);
+        $stmt->bind_param("is", $user_id, $newImagePath);
+        $stmt->execute();
+        $stmt->close();
+
         // Increment user's credit by 1
         $update_credit_query = "UPDATE users SET credit = credit + 1 WHERE id=?";
         $stmt = $conn->prepare($update_credit_query);

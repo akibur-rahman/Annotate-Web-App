@@ -184,7 +184,7 @@ $conn->close();
     <script>
         document.addEventListener('DOMContentLoaded', (event) => {
             let currentIndex = 0; // Initialize index to track current image
-            const images = <?php echo json_encode($images); ?>; // Array of image paths
+            const images = <?php echo json_encode(array_values($images)); ?>; // Array of image paths
 
             function loadImage(index) {
                 const img = new Image();
