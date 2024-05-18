@@ -31,6 +31,7 @@ if ($result->num_rows > 0) {
     $user = $result->fetch_assoc();
     $first_name = $user['first_name'];
     $last_name = $user['last_name'];
+    $credit = $user['credit'];
 } else {
     // Redirect to login page if user not found
     header("Location: login.php");
@@ -157,7 +158,7 @@ $conn->close();
             <img src="https://png.pngtree.com/png-clipart/20231019/original/pngtree-user-profile-avatar-png-image_13369988.png" alt="Profile Picture">
             <div class="username"><?php echo htmlspecialchars($first_name . " " . $last_name); ?></div>
         </div>
-        <div class="score">Score: <span id="score">0</span></div>
+        <div class="score">Credit: <span id="credit"><?php echo htmlspecialchars($credit); ?></span></div>
     </header>
 
     <main>
@@ -165,19 +166,12 @@ $conn->close();
             <div class="annotation-app">
                 <canvas id="canvas"></canvas>
                 <div class="annotation-controls">
-                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                        <select id="annotation-label" class="mdl-textfield__input">
-                            <option value="0">Label 0</option>
-                            <option value="1">Label 1</option>
-                        </select>
-                        <label class="mdl-textfield__label" for="annotation-label"></label>
-                    </div>
-                    <button id="done-button" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
-                        Done
-                    </button>
-                    <button id="next-button" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--primary">
-                        Next
-                    </button>
+                    <select id="annotation-label">
+                        <option value="0">Label 0</option>
+                        <option value="1">Label 1</option>
+                    </select>
+                    <button id="done-button" class="mdc-button">Done</button>
+                    <button id="next-button" class="mdc-button">Next</button>
                 </div>
             </div>
         </section>
@@ -191,15 +185,14 @@ $conn->close();
         document.addEventListener('DOMContentLoaded', (event) => {
             let currentIndex = 0; // Initialize index to track current image
             const images = <?php echo json_encode($images); ?>; // Array of image paths
-            let annotations = []; // Array to store annotations for the current image
-            let isDrawing = false;
-            let startX, startY, endX, endY;
 
             function loadImage(index) {
                 const img = new Image();
                 img.src = images[index];
                 const canvas = document.getElementById('canvas');
                 const ctx = canvas.getContext('2d');
+                let isDrawing = false;
+                let startX, startY, endX, endY;
 
                 img.onload = function() {
                     canvas.width = img.width; // Set canvas width to match image width
@@ -228,57 +221,62 @@ $conn->close();
                 canvas.addEventListener('mouseup', () => {
                     isDrawing = false;
                 });
-            }
 
-            function saveAnnotation(x1, y1, x2, y2) {
-                const label = document.getElementById('annotation-label').value;
-                const canvas = document.getElementById('canvas');
-                const width = canvas.width;
-                const height = canvas.height;
+                function saveAnnotation(x1, y1, x2, y2) {
+                    const label = document.getElementById('annotation-label').value;
+                    const width = canvas.width;
+                    const height = canvas.height;
 
-                const normX = (x1 + x2) / 2 / width;
-                const normY = (y1 + y2) / 2 / height;
-                const normWidth = Math.abs(x2 - x1) / width;
-                const normHeight = Math.abs(y2 - y1) / height;
+                    const normX = (x1 + x2) / 2 / width;
+                    const normY = (y1 + y2) / 2 / height;
+                    const normWidth = Math.abs(x2 - x1) / width;
+                    const normHeight = Math.abs(y2 - y1) / height;
 
-                const annotationData = `${label} ${normX} ${normY} ${normWidth} ${normHeight}`;
-                annotations.push(annotationData); // Store annotation in the array
+                    const annotationData = `${label} ${normX} ${normY} ${normWidth} ${normHeight}\n`;
 
-                console.log(`Annotation saved: ${annotationData}`);
-            }
+                    // Disable the button to prevent multiple requests
+                    const doneButton = document.getElementById('done-button');
+                    doneButton.disabled = true;
 
-            document.getElementById('done-button').addEventListener('click', () => {
-                if (startX !== undefined && startY !== undefined && endX !== undefined && endY !== undefined) {
-                    saveAnnotation(startX, startY, endX, endY);
-                }
-            });
-
-            document.getElementById('next-button').addEventListener('click', function() {
-                if (annotations.length > 0) {
-                    const annotationString = annotations.join('\n');
-
-                    // Send all accumulated annotations to the server
+                    // Send the annotation data to the server to save it
                     fetch('save_annotation.php', {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/x-www-form-urlencoded'
                             },
-                            body: `image=${encodeURIComponent(images[currentIndex])}&data=${encodeURIComponent(annotationString)}`
-                        }).then(response => response.text())
-                        .then(data => console.log(data))
-                        .catch(error => console.error('Error:', error));
-
-                    annotations = []; // Clear the annotations array for the next image
+                            body: `image=${encodeURIComponent(images[index])}&data=${encodeURIComponent(annotationData)}`
+                        })
+                        .then(response => response.text())
+                        .then(newCredit => {
+                            document.getElementById('credit').textContent = newCredit;
+                            doneButton.disabled = false; // Re-enable the button after response is received
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            doneButton.disabled = false; // Re-enable the button if there's an error
+                        });
                 }
 
+                // Add event listener to the "Done" button
+                const doneButton = document.getElementById('done-button');
+                doneButton.onclick = () => {
+                    if (startX !== undefined && startY !== undefined && endX !== undefined && endY !== undefined) {
+                        saveAnnotation(startX, startY, endX, endY);
+                        startX = startY = endX = endY = undefined; // Reset coordinates
+                    }
+                };
+            }
+
+            loadImage(currentIndex); // Load the first image initially
+
+            document.getElementById('next-button').addEventListener('click', function() {
                 // Increment index to load the next image
                 currentIndex = (currentIndex + 1) % images.length;
                 loadImage(currentIndex); // Load the next image
             });
-
-            loadImage(currentIndex); // Load the first image initially
         });
     </script>
+
 </body>
 
 </html>
