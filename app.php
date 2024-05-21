@@ -50,7 +50,6 @@ if (count($images) > 0) {
 
 $conn->close();
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -59,6 +58,7 @@ $conn->close();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>App</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@material/button@14.0.0/dist/mdc.button.min.css">
     <style>
         * {
             margin: 0;
@@ -67,7 +67,7 @@ $conn->close();
         }
 
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Roboto', sans-serif;
             background-color: #f5f5f5;
             color: #333;
         }
@@ -76,14 +76,18 @@ $conn->close();
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background-color: #1976D2;
+            background: linear-gradient(45deg, #1976D2, #64B5F6);
             color: white;
-            padding: 10px 20px;
+            padding: 16px 24px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .profile {
             display: flex;
             align-items: center;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 8px 16px;
         }
 
         .profile img {
@@ -91,25 +95,22 @@ $conn->close();
             height: 40px;
             border-radius: 50%;
             margin-right: 10px;
-        }
-
-        .score {
-            font-size: 18px;
-            margin-right: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
 
         .center-section {
             display: flex;
             justify-content: center;
             align-items: center;
-            height: calc(100vh - 140px);
+            height: calc(100vh - 200px);
+            padding: 24px;
         }
 
         .annotation-app {
             background-color: white;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 24px;
+            border-radius: 8px;
             max-width: 800px;
             margin: 0 auto;
             display: flex;
@@ -124,13 +125,9 @@ $conn->close();
         .annotation-controls {
             margin-top: 20px;
             display: flex;
-            justify-content: space-between;
+            justify-content: center;
             align-items: center;
-        }
-
-        .annotation-controls .mdl-button {
-            margin-right: 10px;
-            margin-left: 10px;
+            gap: 16px;
         }
 
         #canvas {
@@ -138,16 +135,41 @@ $conn->close();
             border: 1px solid #ccc;
             max-width: 100%;
             max-height: 100%;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         footer {
-            background-color: #1976D2;
+            background: linear-gradient(45deg, #1976D2, #64B5F6);
             color: white;
             text-align: center;
-            padding: 10px 0;
+            padding: 16px;
+            box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
             position: fixed;
             bottom: 0;
+            left: 0;
             width: 100%;
+        }
+
+        .mdc-button {
+            background-color: #1976D2;
+            color: white;
+            border-radius: 4px;
+            padding: 8px 16px;
+            text-transform: uppercase;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+
+        .mdc-button:hover {
+            background-color: #1565C0;
+        }
+
+        .mdc-button--gradient {
+            background: linear-gradient(45deg, #1976D2, #64B5F6);
+        }
+
+        .mdc-button--gradient:hover {
+            background: linear-gradient(45deg, #1565C0, #42A5F5);
         }
     </style>
 </head>
@@ -158,20 +180,25 @@ $conn->close();
             <img src="https://png.pngtree.com/png-clipart/20231019/original/pngtree-user-profile-avatar-png-image_13369988.png" alt="Profile Picture">
             <div class="username"><?php echo htmlspecialchars($first_name . " " . $last_name); ?></div>
         </div>
-        <div class="score">Credit: <span id="credit"><?php echo htmlspecialchars($credit); ?></span></div>
+        <div>
+            <div class="score">Credit: <span id="credit"><?php echo htmlspecialchars($credit); ?></span></div>
+
+        </div>
+        <button class="mdc-button mdc-button--gradient">Dashboard</button>
     </header>
 
     <main>
         <section class="center-section">
             <div class="annotation-app">
+                <img src="" id="image-to-annotate" style="display: none;">
                 <canvas id="canvas"></canvas>
                 <div class="annotation-controls">
                     <select id="annotation-label">
                         <option value="0">Label 0</option>
                         <option value="1">Label 1</option>
                     </select>
-                    <button id="done-button" class="mdc-button">Done</button>
-                    <button id="next-button" class="mdc-button">Next</button>
+                    <button id="done-button" class="mdc-button mdc-button--gradient">Done</button>
+                    <button id="next-button" class="mdc-button mdc-button--gradient">Next</button>
                 </div>
             </div>
         </section>
@@ -180,6 +207,8 @@ $conn->close();
     <footer>
         © 2024 Your Company
     </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/@material/button@14.0.0/dist/mdc.button.min.js"></script>
 
     <script>
         document.addEventListener('DOMContentLoaded', (event) => {
@@ -192,6 +221,7 @@ $conn->close();
                 const canvas = document.getElementById('canvas');
                 const ctx = canvas.getContext('2d');
                 let isDrawing = false;
+                let annotations = [];
                 let startX, startY, endX, endY;
 
                 img.onload = function() {
@@ -220,23 +250,34 @@ $conn->close();
 
                 canvas.addEventListener('mouseup', () => {
                     isDrawing = false;
+                    annotations.push({
+                        startX,
+                        startY,
+                        endX,
+                        endY
+                    });
                 });
 
-                function saveAnnotation(x1, y1, x2, y2) {
+                function saveAnnotations() {
                     const label = document.getElementById('annotation-label').value;
                     const width = canvas.width;
                     const height = canvas.height;
 
-                    const normX = (x1 + x2) / 2 / width;
-                    const normY = (y1 + y2) / 2 / height;
-                    const normWidth = Math.abs(x2 - x1) / width;
-                    const normHeight = Math.abs(y2 - y1) / height;
+                    let annotationData = '';
 
-                    const annotationData = `${label} ${normX} ${normY} ${normWidth} ${normHeight}\n`;
-
-                    // Disable the button to prevent multiple requests
-                    const doneButton = document.getElementById('done-button');
-                    doneButton.disabled = true;
+                    annotations.forEach(annotation => {
+                        const {
+                            startX,
+                            startY,
+                            endX,
+                            endY
+                        } = annotation;
+                        const normX = (startX + endX) / 2 / width;
+                        const normY = (startY + endY) / 2 / height;
+                        const normWidth = Math.abs(endX - startX) / width;
+                        const normHeight = Math.abs(endY - startY) / height;
+                        annotationData += `${label} ${normX} ${normY} ${normWidth} ${normHeight}\n`;
+                    });
 
                     // Send the annotation data to the server to save it
                     fetch('save_annotation.php', {
@@ -249,31 +290,23 @@ $conn->close();
                         .then(response => response.text())
                         .then(newCredit => {
                             document.getElementById('credit').textContent = newCredit;
-                            doneButton.disabled = false; // Re-enable the button after response is received
                         })
                         .catch(error => {
                             console.error('Error:', error);
-                            doneButton.disabled = false; // Re-enable the button if there's an error
                         });
                 }
 
-                // Add event listener to the "Done" button
-                const doneButton = document.getElementById('done-button');
-                doneButton.onclick = () => {
-                    if (startX !== undefined && startY !== undefined && endX !== undefined && endY !== undefined) {
-                        saveAnnotation(startX, startY, endX, endY);
-                        startX = startY = endX = endY = undefined; // Reset coordinates
-                    }
+                // Add event listener to the "Next" button
+                const nextButton = document.getElementById('next-button');
+                nextButton.onclick = () => {
+                    saveAnnotations();
+                    currentIndex = (currentIndex + 1) % images.length;
+                    annotations = [];
+                    loadImage(currentIndex); // Load the next image
                 };
             }
 
             loadImage(currentIndex); // Load the first image initially
-
-            document.getElementById('next-button').addEventListener('click', function() {
-                // Increment index to load the next image
-                currentIndex = (currentIndex + 1) % images.length;
-                loadImage(currentIndex); // Load the next image
-            });
         });
     </script>
 

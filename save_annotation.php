@@ -13,8 +13,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $imageName = $_POST['image'];
     $annotationData = $_POST['data'];
     $rawDir = 'dataset/raw';
-    $annotatedDir = 'dataset/annotated/train/labels';
-    $annotatedImagesDir = 'dataset/annotated/train/images';
+    $trainDir = 'dataset/annotated/train';
+    $annotatedDir = "$trainDir/labels";
+    $annotatedImagesDir = "$trainDir/images";
 
     // Ensure the directories exist
     if (!is_dir($annotatedDir)) {
@@ -36,10 +37,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         die("Failed to write to file: $annotationFile");
     }
 
-    // Move the image to the annotated images directory
+    // Move the image to the annotated images directory if not already moved
     $newImagePath = "$annotatedImagesDir/" . basename($imageName);
-    if (!rename($imageName, $newImagePath)) {
-        die("Failed to move image to annotated directory: $newImagePath");
+    if (!file_exists($newImagePath)) {
+        if (!rename($imageName, $newImagePath)) {
+            die("Failed to move image to annotated directory: $newImagePath");
+        }
     }
 
     // Database connection
