@@ -79,7 +79,7 @@
     <header>
         <nav class="navbar">
             <div class="navbar-logo">
-                <img src="logo.png" alt="Logo">
+                <h3 style="font-family:'Times New Roman', Times, serif">Annotate</h3>
             </div>
             <div class="navbar-buttons">
                 <a href="login.php"><button id="loginBtn">Login</button></a>
@@ -90,7 +90,7 @@
 
     <main>
         <section class="center-section">
-            <img src="image.jpg" alt="Image">
+            <img src="https://assets.markup.io/app/uploads/2023/04/mcmarvin.gif" alt="Image">
             <h1>Welcome to our Image Dataset Annotation App</h1>
             <p>Start annotating your images to build powerful datasets for your projects.</p>
         </section>
