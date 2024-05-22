@@ -184,7 +184,7 @@ $conn->close();
             <div class="score">Credit: <span id="credit"><?php echo htmlspecialchars($credit); ?></span></div>
 
         </div>
-        <button class="mdc-button mdc-button--gradient">Dashboard</button>
+        <button class="mdc-button mdc-button--gradient" onclick="location.href='dashboard.php'">Dashboard</button>
     </header>
 
     <main>
