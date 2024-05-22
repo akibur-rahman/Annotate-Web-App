@@ -96,18 +96,6 @@ $conn->close();
         table th {
             background-color: #f0f0f0;
         }
-
-        footer {
-            background: linear-gradient(45deg, #1976D2, #64B5F6);
-            color: white;
-            text-align: center;
-            padding: 16px;
-            box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-        }
     </style>
 </head>
 
@@ -135,10 +123,6 @@ $conn->close();
             </tbody>
         </table>
     </main>
-
-    <footer>
-        © 2024 Your Company
-    </footer>
 </body>
 
 </html>
