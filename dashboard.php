@@ -67,9 +67,6 @@ $conn->close();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@material/button@14.0.0/dist/mdc.button.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@material/layout-grid@14.0.0/dist/mdc.layout-grid.min.css">
     <style>
         * {
             margin: 0;
@@ -78,7 +75,7 @@ $conn->close();
         }
 
         body {
-            font-family: 'Roboto', sans-serif;
+            font-family: Arial, sans-serif;
             background-color: #f5f5f5;
             color: #333;
         }
@@ -111,19 +108,10 @@ $conn->close();
 
         .annotation-grid {
             padding: 24px;
-        }
-
-        .annotation-grid .mdc-layout-grid__inner {
             display: flex;
             flex-wrap: wrap;
             gap: 16px;
-        }
-
-        .annotation-grid .mdc-layout-grid__cell {
-            flex: 1 1 calc(33.333% - 16px);
-            display: flex;
             justify-content: center;
-            align-items: center;
         }
 
         .annotation-card {
@@ -162,6 +150,20 @@ $conn->close();
             width: 100%;
         }
 
+        .button {
+            background-color: #1976D2;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .button:hover {
+            background-color: #1565C0;
+        }
+
         .logout-button {
             margin-left: 16px;
             color: white;
@@ -186,24 +188,18 @@ $conn->close();
         <div>
             <div class="score">Credit: <span id="credit"><?php echo htmlspecialchars($credit); ?></span></div>
         </div>
-        <button class="mdc-button mdc-button--gradient" onclick="location.href='app.php'">Annotate Images</button>
+        <button class="button" onclick="location.href='app.php'">Annotate Images</button>
         <button class="logout-button" onclick="location.href='logout.php'">Logout</button>
     </header>
 
     <main>
         <section class="annotation-grid">
-            <div class="mdc-layout-grid">
-                <div class="mdc-layout-grid__inner">
-                    <?php foreach ($annotated_images as $image_path) : ?>
-                        <div class="mdc-layout-grid__cell">
-                            <div class="annotation-card">
-                                <img src="<?php echo htmlspecialchars($image_path); ?>" alt="Annotated Image">
-                                <canvas class="annotation-overlay" data-image="<?php echo htmlspecialchars($image_path); ?>"></canvas>
-                            </div>
-                        </div>
-                    <?php endforeach; ?>
+            <?php foreach ($annotated_images as $image_path) : ?>
+                <div class="annotation-card">
+                    <img src="<?php echo htmlspecialchars($image_path); ?>" alt="Annotated Image">
+                    <canvas class="annotation-overlay" data-image="<?php echo htmlspecialchars($image_path); ?>"></canvas>
                 </div>
-            </div>
+            <?php endforeach; ?>
         </section>
     </main>
 

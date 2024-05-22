@@ -95,8 +95,6 @@
             <p>Start annotating your images to build powerful datasets for your projects.</p>
         </section>
     </main>
-
-    <script src="script.js"></script>
 </body>
 
 </html>

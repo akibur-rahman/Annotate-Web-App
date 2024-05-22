@@ -80,6 +80,20 @@
         .sign-up a:hover {
             text-decoration: underline;
         }
+
+        .admin-login {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .admin-login a {
+            color: #1976D2;
+            text-decoration: none;
+        }
+
+        .admin-login a:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 
@@ -100,7 +114,10 @@
             </div>
         </form>
         <div class="sign-up">
-            <p>Not Registared? <a href="signup.php">Sign Up</a></p>
+            <p>Not Registered? <a href="signup.php">Sign Up</a></p>
+        </div>
+        <div class="admin-login">
+            <p><a href="admin_login.php">Login as Admin</a></p>
         </div>
     </div>
 </body>

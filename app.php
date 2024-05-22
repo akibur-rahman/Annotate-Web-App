@@ -57,8 +57,6 @@ $conn->close();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>App</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@material/button@14.0.0/dist/mdc.button.min.css">
     <style>
         * {
             margin: 0;
@@ -67,7 +65,7 @@ $conn->close();
         }
 
         body {
-            font-family: 'Roboto', sans-serif;
+            font-family: Arial, sans-serif;
             background-color: #f5f5f5;
             color: #333;
         }
@@ -150,7 +148,7 @@ $conn->close();
             width: 100%;
         }
 
-        .mdc-button {
+        .button {
             background-color: #1976D2;
             color: white;
             border-radius: 4px;
@@ -158,17 +156,19 @@ $conn->close();
             text-transform: uppercase;
             font-weight: bold;
             transition: background-color 0.3s ease;
+            border: none;
+            cursor: pointer;
         }
 
-        .mdc-button:hover {
+        .button:hover {
             background-color: #1565C0;
         }
 
-        .mdc-button--gradient {
+        .button--gradient {
             background: linear-gradient(45deg, #1976D2, #64B5F6);
         }
 
-        .mdc-button--gradient:hover {
+        .button--gradient:hover {
             background: linear-gradient(45deg, #1565C0, #42A5F5);
         }
     </style>
@@ -182,9 +182,8 @@ $conn->close();
         </div>
         <div>
             <div class="score">Credit: <span id="credit"><?php echo htmlspecialchars($credit); ?></span></div>
-
         </div>
-        <button class="mdc-button mdc-button--gradient" onclick="location.href='dashboard.php'">Dashboard</button>
+        <button class="button button--gradient" onclick="location.href='dashboard.php'">Dashboard</button>
     </header>
 
     <main>
@@ -197,8 +196,8 @@ $conn->close();
                         <option value="0">Label 0</option>
                         <option value="1">Label 1</option>
                     </select>
-                    <button id="done-button" class="mdc-button mdc-button--gradient">Done</button>
-                    <button id="next-button" class="mdc-button mdc-button--gradient">Next</button>
+                    <button id="done-button" class="button button--gradient">Done</button>
+                    <button id="next-button" class="button button--gradient">Next</button>
                 </div>
             </div>
         </section>
@@ -207,8 +206,6 @@ $conn->close();
     <footer>
         © 2024 Your Company
     </footer>
-
-    <script src="https://cdn.jsdelivr.net/npm/@material/button@14.0.0/dist/mdc.button.min.js"></script>
 
     <script>
         document.addEventListener('DOMContentLoaded', (event) => {
