@@ -59,6 +59,34 @@ if ($annotations_result->num_rows > 0) {
 }
 
 $conn->close();
+
+// Define colors (at least 80 unique colors)
+$colors = [
+    '#FF5733', '#33FF57', // Red and Green
+    '#3357FF', '#FF33A1', // Blue and Pink
+    '#A133FF', '#33FFF5', // Purple and Cyan
+    '#FF5733', '#F5FF33', // Red and Yellow
+    '#5733FF', '#33FFA1', // Indigo and Mint
+    '#FFA133', '#33FF33', // Orange and Lime
+    '#FF3333', '#33FFFF', // Bright Red and Aqua
+    '#FFFF33', '#3333FF', // Yellow and Blue
+];
+
+// Load the labels from data.yaml
+require 'vendor/autoload.php';
+
+use Symfony\Component\Yaml\Yaml;
+
+$rawDir = 'dataset/raw';
+$dataYamlPath = "$rawDir/data.yaml";
+$dataYaml = Yaml::parseFile($dataYamlPath);
+$labelNames = $dataYaml['names'];
+
+// Map labels to colors
+$labelColors = [];
+foreach ($labelNames as $index => $labelName) {
+    $labelColors[$labelName] = $colors[$index % count($colors)];
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -210,6 +238,9 @@ $conn->close();
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const canvasElements = document.querySelectorAll('.annotation-overlay');
+            const labelColors = <?php echo json_encode($labelColors); ?>;
+            const labelNames = <?php echo json_encode($labelNames); ?>;
+
             canvasElements.forEach(canvas => {
                 const imagePath = canvas.getAttribute('data-image');
                 const annotationPath = imagePath.replace('/images/', '/labels/').replace('.jpg', '.txt');
@@ -229,13 +260,14 @@ $conn->close();
                             const annotations = data.trim().split('\n').map(line => line.split(' '));
 
                             annotations.forEach(annotation => {
-                                const [label, normX, normY, normWidth, normHeight] = annotation.map(Number);
+                                const [labelIndex, normX, normY, normWidth, normHeight] = annotation.map(Number);
                                 const x = (normX - normWidth / 2) * canvas.width;
                                 const y = (normY - normHeight / 2) * canvas.height;
                                 const width = normWidth * canvas.width;
                                 const height = normHeight * canvas.height;
 
-                                ctx.strokeStyle = 'red';
+                                const labelName = labelNames[labelIndex];
+                                ctx.strokeStyle = labelColors[labelName] || '#000000';
                                 ctx.lineWidth = 2;
                                 ctx.strokeRect(x, y, width, height);
                             });

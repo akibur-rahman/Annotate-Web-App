@@ -257,16 +257,18 @@ $conn->close();
 
                 canvas.addEventListener('mouseup', () => {
                     isDrawing = false;
+                    const selectedLabelIndex = document.getElementById('annotation-label').selectedIndex;
+                    const selectedLabelValue = document.getElementById('annotation-label').options[selectedLabelIndex].value;
                     annotations.push({
                         startX,
                         startY,
                         endX,
-                        endY
+                        endY,
+                        label: selectedLabelValue // Save the selected label with annotation
                     });
                 });
 
                 function saveAnnotations() {
-                    const label = document.getElementById('annotation-label').value;
                     const width = canvas.width;
                     const height = canvas.height;
 
@@ -277,7 +279,8 @@ $conn->close();
                             startX,
                             startY,
                             endX,
-                            endY
+                            endY,
+                            label
                         } = annotation;
                         const normX = (startX + endX) / 2 / width;
                         const normY = (startY + endY) / 2 / height;
@@ -311,11 +314,19 @@ $conn->close();
                     annotations = [];
                     loadImage(currentIndex); // Load the next image
                 };
+
+                // Add event listener to the "Done" button
+                const doneButton = document.getElementById('done-button');
+                doneButton.onclick = () => {
+                    saveAnnotations();
+                    annotations = []; // Clear annotations after saving
+                };
             }
 
             loadImage(currentIndex); // Load the first image initially
         });
     </script>
+
 
 </body>
 

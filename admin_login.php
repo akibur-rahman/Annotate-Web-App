@@ -46,8 +46,6 @@ $conn->close();
 <head>
     <meta charset="UTF-8">
     <title>Admin Login</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@material/button@14.0.0/dist/mdc.button.min.css">
     <style>
         body {
             font-family: 'Roboto', sans-serif;
@@ -109,7 +107,7 @@ $conn->close();
         <form method="POST">
             <input type="text" name="username" placeholder="Username" required>
             <input type="password" name="password" placeholder="Password" required>
-            <button type="submit" class="mdc-button mdc-button--raised">Login</button>
+            <button type="submit">Login</button>
         </form>
         <?php if (isset($error)) : ?>
             <div class="error"><?php echo htmlspecialchars($error); ?></div>

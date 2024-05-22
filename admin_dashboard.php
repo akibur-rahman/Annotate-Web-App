@@ -41,8 +41,6 @@ $conn->close();
 <head>
     <meta charset="UTF-8">
     <title>Admin Dashboard</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@material/button@14.0.0/dist/mdc.button.min.css">
     <style>
         body {
             font-family: 'Roboto', sans-serif;
