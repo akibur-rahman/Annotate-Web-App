@@ -145,17 +145,7 @@ $conn->close();
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
-        footer {
-            background: linear-gradient(45deg, #1976D2, #64B5F6);
-            color: white;
-            text-align: center;
-            padding: 16px;
-            box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-        }
+
 
         .button {
             background-color: #1976D2;
@@ -212,10 +202,6 @@ $conn->close();
             </div>
         </section>
     </main>
-
-    <footer>
-        © 2024 Your Company
-    </footer>
 
     <script>
         document.addEventListener('DOMContentLoaded', (event) => {
