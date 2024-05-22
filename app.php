@@ -48,6 +48,15 @@ if (count($images) > 0) {
     exit("No images found for annotation.");
 }
 
+// Parse data.yaml for label names
+require 'vendor/autoload.php';
+
+use Symfony\Component\Yaml\Yaml;
+
+$dataYamlPath = "$rawDir/data.yaml";
+$dataYaml = Yaml::parseFile($dataYamlPath);
+$labelNames = $dataYaml['names'];
+
 $conn->close();
 ?>
 <!DOCTYPE html>
@@ -193,8 +202,9 @@ $conn->close();
                 <canvas id="canvas"></canvas>
                 <div class="annotation-controls">
                     <select id="annotation-label">
-                        <option value="0">Label 0</option>
-                        <option value="1">Label 1</option>
+                        <?php foreach ($labelNames as $index => $labelName) : ?>
+                            <option value="<?php echo $index; ?>"><?php echo htmlspecialchars($labelName); ?></option>
+                        <?php endforeach; ?>
                     </select>
                     <button id="done-button" class="button button--gradient">Done</button>
                     <button id="next-button" class="button button--gradient">Next</button>
