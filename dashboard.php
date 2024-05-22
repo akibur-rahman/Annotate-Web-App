@@ -161,6 +161,19 @@ $conn->close();
             left: 0;
             width: 100%;
         }
+
+        .logout-button {
+            margin-left: 16px;
+            color: white;
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .logout-button:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 
@@ -174,6 +187,7 @@ $conn->close();
             <div class="score">Credit: <span id="credit"><?php echo htmlspecialchars($credit); ?></span></div>
         </div>
         <button class="mdc-button mdc-button--gradient" onclick="location.href='app.php'">Annotate Images</button>
+        <button class="logout-button" onclick="location.href='logout.php'">Logout</button>
     </header>
 
     <main>
