@@ -1,3 +1,6 @@
+## Description
+Annotating image data is an essential task for supervised ML operations. Most of the annotation tools are either paid or aren't good enough. That's why I have decided to build my own. This tool can annotate image data with ease and save the annotations along with images.
+
 
 ## Installation
 
